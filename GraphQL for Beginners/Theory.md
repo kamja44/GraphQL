@@ -53,3 +53,21 @@ GraphQL
 - RESTFUL API의 Under Fetching 문제 해결
   - 단 하나의 request로 원하는 모든 데이터를 얻을 수 있다.
   - 일반적인 RESTFUL API는 여러 URL에서 로딩해야 하지만, GraphQL API는 앱에 필요한 모든 데이터를 단일 request로 가져온다.
+
+# 4.1 Query Type
+
+- 모든 GraphQL 서버는 스키마를 사용하여 클라이언트가 쿼리할 수 있는 데이터 구조를 정의한다..
+- 타입을 정의할 때 Query는 default이다.
+  - 즉, Query의 타입은 항상 정의해야한다.
+    - Query type 안에 있는 것들은 GET url과 동일하다.
+
+```
+const typeDefs = gql`
+  type Query {
+    text: String
+    hello: String
+  }
+`
+```
+
+- 즉, 사용자가 request하게 하도록 하려면 tyep Query안에 정의해야 한다.

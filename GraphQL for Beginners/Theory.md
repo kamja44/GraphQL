@@ -71,3 +71,28 @@ const typeDefs = gql`
 ```
 
 - 즉, 사용자가 request하게 하도록 하려면 tyep Query안에 정의해야 한다.
+
+# 4.2 Scalar and Root Types
+
+Scalar type
+
+- GraphQL에 내장되어 있는 build in type
+  - GraphQL 객체 타입에는 이름과 필드가 있지만, 이 필드는 더욱 구체적인 데이터로 해석되어야 한다.
+  - 이 때 스칼라 타입을 사용한다.
+
+```
+gql`
+  type User{
+      id: ID
+      username: String
+  }
+  type Tweet {
+    id: ID
+    text: String
+    author: User => Tweet이 하나의 author를 갖는다.
+  }
+  type Query {
+    allTweets: [Tweet] => allTweets는 여러개의 Tweet을 준다.
+  }
+  `
+```

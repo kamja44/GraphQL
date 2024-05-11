@@ -212,3 +212,106 @@ tweet(root, args) {
   - 1번째는 root argument
   - 2번째는 우리가 원하는 데이터가 있는 arguemnt이다.
 - 위의 코드 실행결과로 user가 id를 1로 해서 보내면 {id:"1"}이 콘솔에 찍힌다.
+
+# 4.8 Type Resolver
+
+```
+let tweets = [
+  {
+    id: "1",
+    text: "First",
+  },
+  {
+    id: "2",
+    text: "Second",
+  },
+];
+let users = [
+  {
+    id: "1",
+    firstName: "king",
+    lastName: "kamja",
+  },
+  {
+    id: "2",
+    firstName: "ko",
+    lastName: "kuma",
+  },
+];
+const typeDefs = gql`
+  type User {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    fullName: String!
+  }
+  type Tweet {
+    id: ID!
+    text: String!
+    author: User
+  }
+  type Query {
+    allUsers: [User!]!
+    allTweets: [Tweet!]!
+    tweet(id: ID!): Tweet
+  }
+  type Mutation {
+    postTweet(text: String!, userID: ID!): Tweet!
+    deleteTweet(id: ID!): Boolean!
+  }
+`;
+
+const resolvers = {
+  Query: {
+    allTweets() {
+      return tweets;
+    },
+    tweet(root, { id }) {
+      return tweets.find((tweet) => tweet.id === id);
+    },
+    allUsers() {
+      console.log("allUsers called!");
+      return users;
+    },
+  },
+  Mutation: {
+    postTweet(_, { text, userId }) {
+      const newTweet = {
+        id: tweets.length + 1,
+        text,
+      };
+      tweets.push(newTweet);
+      return newTweet;
+    },
+    deleteTweet(_, { id }) {
+      const tweet = tweets.find((tweet) => tweet.id === id);
+      if (!tweet) return false;
+      tweets = tweets.filter((tweet) => tweet.id !== id);
+      return true;
+    },
+  },
+  User: {
+    fullName(root) {
+      console.log("fullName called");
+      console.log(root);
+      return "hello";
+    },
+  },
+};
+```
+
+- allUsers에는 fullName이 없다.
+  - fullName이 없기에 resolver를 찾아간다.
+    - resolver안에 User타입의 fullName()이 있다. 이를 실행시켜 fullName을 가져온다.
+- argument의 첫번째 argument(root)에는 fullName을 호출하는 resolver이 있다.
+- 즉, 위의 코드를 실행시키면 아래와 같은 결과를 얻는다.
+
+```
+allUsers called!
+fullName called
+{ id: '1', firstName: 'king', lastName: 'kamja' }
+fullName called
+{ id: '2', firstName: 'ko', lastName: 'kuma' }
+```
+
+- 즉, allUser가 root argument에 있다.

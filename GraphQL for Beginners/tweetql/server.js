@@ -3,10 +3,12 @@ let tweets = [
   {
     id: "1",
     text: "First",
+    userId: "2",
   },
   {
     id: "2",
     text: "Second",
+    userId: "1",
   },
 ];
 let users = [
@@ -62,6 +64,7 @@ const resolvers = {
       const newTweet = {
         id: tweets.length + 1,
         text,
+        userId,
       };
       tweets.push(newTweet);
       return newTweet;
@@ -74,8 +77,16 @@ const resolvers = {
     },
   },
   User: {
+    firstName({ firstName }) {
+      return firstName;
+    },
     fullName({ firstName, lastName }) {
       return `${firstName} ${lastName}`;
+    },
+  },
+  Tweet: {
+    author({ userId }) {
+      return users.find((user) => user.id === userId);
     },
   },
 };

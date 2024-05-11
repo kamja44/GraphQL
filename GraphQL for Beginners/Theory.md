@@ -122,3 +122,93 @@ gql`
 tweet(id: ID): String => tweet의 타입은 String이거나 NULL이라고 판단(Nullable)
 tweet(id: ID!): String! => tweet의 타입은 String이라고 확신 즉, Null이 아니라고 확인(Non Nullable)
 ```
+
+# 4.6 Query Resolvers
+
+- resolver 함수는 DB에 엑세스한 후 다음 데이터를 반환한다.
+
+```
+const tweets = [
+  {
+    id: "1",
+    text: "First",
+  },
+  {
+    id: "2",
+    text: "Second",
+  },
+];
+const typeDefs = gql`
+  type User {
+    id: ID!
+    username: String!
+    firstName: String!
+    lastName: String!
+  }
+  type Tweet {
+    id: ID!
+    text: String!
+    author: User
+  }
+  type Query {
+    allTweets: [Tweet!]!
+    tweet(id: ID!): Tweet
+    ping: String!
+  }
+  type Mutation {
+    postTweet(text: String!, userID: ID!): Tweet!
+    deleteTweet(id: ID!): Boolean!
+  }
+`;
+
+const resolvers = {
+  Query: {
+    allTweets() {
+      return tweets;
+    },
+  },
+};
+
+const server = new ApolloServer({ typeDefs, resolvers });
+```
+
+- Query Result
+
+```
+{
+  allTweets {
+    id
+    text
+  }
+}
+
+{
+  "data": {
+    "allTweets": [
+      {
+        "id": "1",
+        "text": "First"
+      },
+      {
+        "id": "2",
+        "text": "Second"
+      }
+    ]
+  }
+}
+```
+
+- Argument
+
+```
+tweet(root, args) {
+      // First Argument = root argument, Second Argument = 내가 원하는 args
+      console.log(args);
+      return null;
+    },
+```
+
+- resolver에는 2개의 argument가 있음
+  - 1번째는 root argument
+  - 2번째는 우리가 원하는 데이터가 있는 arguemnt이다.
+- 위의 코드 실행결과로 user가 id를 1로 해서 보내면 {id:"1"}이 콘솔에 찍힌다.

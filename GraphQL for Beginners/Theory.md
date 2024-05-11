@@ -96,3 +96,16 @@ gql`
   }
   `
 ```
+
+# 4.3 Mutation Type
+
+- RESTFUL API의 POST와 동일
+- user가 보낸 data로 mutate하는 동작들을 모두 Mutation Type안에 정의한다.
+  - 즉, 서버 측 데이터를 수정하는 모든 작업은 mutation을 통해 보내야 한다.
+
+```
+  type Mutation {
+    postTweet(text: String, userID: ID): Tweet
+    deleteTweet(id: ID): Boolean
+  }
+```

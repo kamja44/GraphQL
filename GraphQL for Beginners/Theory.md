@@ -109,3 +109,16 @@ gql`
     deleteTweet(id: ID): Boolean
   }
 ```
+
+# 4.4 Non Nullable Fields
+
+- !를 붙이지 않으면 Nullable 타입이다.
+  - 즉, null이 올 수 있다.
+  - 즉, !이 붙으면 required라고 생각
+    - NonNull로 명시하면 서버는 항상 이 필드에 대해 null이 아닌 값을 반환할 것으로 예상한다.
+      - 즉, null값이 들어오면 에러가 발생한다.
+
+```
+tweet(id: ID): String => tweet의 타입은 String이거나 NULL이라고 판단(Nullable)
+tweet(id: ID!): String! => tweet의 타입은 String이라고 확신 즉, Null이 아니라고 확인(Non Nullable)
+```

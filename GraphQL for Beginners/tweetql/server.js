@@ -1,40 +1,44 @@
 import { ApolloServer, gql } from "apollo-server";
+import fetch from "node-fetch";
+
 let tweets = [
   {
     id: "1",
-    text: "First",
+    text: "first one!",
     userId: "2",
   },
   {
     id: "2",
-    text: "Second",
+    text: "second one",
     userId: "1",
   },
 ];
+
 let users = [
   {
     id: "1",
-    firstName: "king",
-    lastName: "kamja",
+    firstName: "nico",
+    lastName: "las",
   },
   {
     id: "2",
-    firstName: "ko",
-    lastName: "kuma",
+    firstName: "Elon",
+    lastName: "Mask",
   },
 ];
+
 const typeDefs = gql`
   type User {
     id: ID!
     firstName: String!
     lastName: String!
     """
-    Is the sum of firstname + lastanme
+    Is the sum of firstName + lastName as a string
     """
     fullName: String!
   }
   """
-  Tweet Object represents a resource for a Tweet
+  Tweet object represents a resource for  a Tweet
   """
   type Tweet {
     id: ID!
@@ -42,18 +46,46 @@ const typeDefs = gql`
     author: User
   }
   type Query {
+    allMovies: [Movie!]!
     allUsers: [User!]!
     allTweets: [Tweet!]!
     tweet(id: ID!): Tweet
+    movie(id: String!): Movie
   }
   type Mutation {
-    postTweet(text: String!, userID: ID!): Tweet!
+    postTweet(text: String!, userId: ID!): Tweet!
     """
-    Delete a Tweet if found, else return false
+    Deletes a Tweet if found, else returns false
     """
     deleteTweet(id: ID!): Boolean!
   }
+  type Movie {
+    id: Int!
+    url: String!
+    imdb_code: String!
+    title: String!
+    title_english: String!
+    title_long: String!
+    slug: String!
+    year: Int!
+    rating: Float!
+    runtime: Float!
+    genres: [String]!
+    summary: String
+    description_full: String!
+    synopsis: String
+    yt_trailer_code: String!
+    language: String!
+    background_image: String!
+    background_image_original: String!
+    small_cover_image: String!
+    medium_cover_image: String!
+    large_cover_image: String!
+  }
 `;
+// GET /api/v1/tweets
+// POST DELETE PUT /api/v1/tweets
+// GET /api/v1/tweet/:id
 
 const resolvers = {
   Query: {
@@ -67,11 +99,19 @@ const resolvers = {
       console.log("allUsers called!");
       return users;
     },
+    allMovies() {
+      return fetch("https://yts.mx/api/v2/list_movies.json")
+        .then((r) => r.json())
+        .then((json) => json.data.movies);
+    },
+    movie(_, { id }) {
+      return fetch(`https://yts.mx/api/v2/movie_details.json?movie_id=${id}`)
+        .then((r) => r.json())
+        .then((json) => json.data.movie);
+    },
   },
   Mutation: {
     postTweet(_, { text, userId }) {
-      const userExists = users.find((user) => user.id === userId);
-      if (!userExists) return false;
       const newTweet = {
         id: tweets.length + 1,
         text,
@@ -88,9 +128,6 @@ const resolvers = {
     },
   },
   User: {
-    firstName({ firstName }) {
-      return firstName;
-    },
     fullName({ firstName, lastName }) {
       return `${firstName} ${lastName}`;
     },

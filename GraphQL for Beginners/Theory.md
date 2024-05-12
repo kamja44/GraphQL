@@ -315,3 +315,33 @@ fullName called
 ```
 
 - 즉, allUser가 root argument에 있다.
+
+# 4.10 Documentation
+
+Docstring
+
+- type, field 또는 argument에 대한 설명을 제공한다.
+- Docstrngㅇ느 Apollo Studio Explorer를 포함한 많은 일반적인 GraphQL 도구에 자동으로 나타난다.
+
+```
+"""
+User에 대해 설명
+"""
+type User {
+"""
+firstName에 대해 설명
+"""
+firstName: String!
+
+age(
+"""
+반드시 숫자여야 합니다.
+"""
+arg: Int
+)
+}
+```
+
+- Altair GraphQL Client
+  - Altair GraphQL Client는 GraphQL queries 및implementations을 디버그할 때 사용할 수 있다.
+  - https://altair.sirmuel.design/
